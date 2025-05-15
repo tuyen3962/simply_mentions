@@ -68,7 +68,7 @@ class MentionTextEditingController extends TextEditingController {
   final TextStyle? runTextStyle;
 
   final List<SuggestionCallback> _suggestionCallbacks = <SuggestionCallback>[];
-  final List<_TextMention> _cachedMentions = <_TextMention>[];
+  final List<_TextMention> cachedMentions = <_TextMention>[];
   bool _bGuardDeletion = false;
   String _previousText = '';
   int? _mentionStartingIndex;
@@ -93,7 +93,7 @@ class MentionTextEditingController extends TextEditingController {
   /// Set markup text, this is used when you get data that has the mention
   /// syntax and you want to initialize the [TextField] with it.
   Future<void> setMarkupText(BuildContext context, String markupText) async {
-    _cachedMentions.clear();
+    cachedMentions.clear();
 
     String deconstructedText = '';
     int lastStartingRunStart = 0;
@@ -113,18 +113,23 @@ class MentionTextEditingController extends TextEditingController {
         if (match != null && match.start == 0) {
           deconstructedText += markupText.substring(lastStartingRunStart, i);
 
-          final String matchedMarkup = match.input.substring(match.start, match.end);
+          final String matchedMarkup =
+              match.input.substring(match.start, match.end);
           final String mentionId = match[3]!;
-          final MentionObject? mention = await idToMentionObject(context, mentionId);
+          final MentionObject? mention =
+              await idToMentionObject(context, mentionId);
 
-          final String mentionDisplayName = mention?.displayName ?? syntax.missingText;
+          final String mentionDisplayName =
+              mention?.displayName ?? syntax.missingText;
 
-          final String insertText = '${syntax.startingCharacter}$mentionDisplayName';
+          final String insertText =
+              '${syntax.startingCharacter}$mentionDisplayName';
 
           final int indexToInsertMention = deconstructedText.length;
-          final int indexToEndInsertion = indexToInsertMention + insertText.length;
+          final int indexToEndInsertion =
+              indexToInsertMention + insertText.length;
 
-          _cachedMentions.add(
+          cachedMentions.add(
             _TextMention(
               id: mentionId,
               display: insertText,
@@ -185,8 +190,8 @@ class MentionTextEditingController extends TextEditingController {
     String finalString = '';
     int lastStartingRunStart = 0;
 
-    for (int i = 0; i < _cachedMentions.length; ++i) {
-      final _TextMention mention = _cachedMentions[i];
+    for (int i = 0; i < cachedMentions.length; ++i) {
+      final _TextMention mention = cachedMentions[i];
 
       final int indexToEndRegular = mention.start;
 
@@ -218,7 +223,7 @@ class MentionTextEditingController extends TextEditingController {
     int lastStartingRunStart = 0;
     final List<InlineSpan> inlineSpans = <InlineSpan>[];
 
-    for (final _TextMention mention in _cachedMentions) {
+    for (final _TextMention mention in cachedMentions) {
       final int indexToEndRegular = mention.start;
 
       if (indexToEndRegular != lastStartingRunStart) {
@@ -283,7 +288,7 @@ class MentionTextEditingController extends TextEditingController {
     final int mentionVisibleTextEnd =
         _mentionStartingIndex! + mention.displayName.length + 1;
 
-    _cachedMentions.add(_TextMention(
+    cachedMentions.add(_TextMention(
         id: mention.id,
         display: mention.displayName,
         start: _mentionStartingIndex!,
@@ -314,7 +319,7 @@ class MentionTextEditingController extends TextEditingController {
       _mentionSyntax != null;
 
   void _sortMentions() {
-    _cachedMentions.sort((_TextMention a, _TextMention b) {
+    cachedMentions.sort((_TextMention a, _TextMention b) {
       return a.start - b.start;
     });
   }
@@ -425,8 +430,8 @@ class MentionTextEditingController extends TextEditingController {
         rangeEnd -= 1;
       }
 
-      for (int x = _cachedMentions.length - 1; x >= 0; --x) {
-        final _TextMention mention = _cachedMentions[x];
+      for (int x = cachedMentions.length - 1; x >= 0; --x) {
+        final _TextMention mention = cachedMentions[x];
 
         // Not overlapping but we inserted text in front of mentions so we need to shift them
         if (mention.start >= currentTextIndex &&
@@ -439,7 +444,7 @@ class MentionTextEditingController extends TextEditingController {
         if (!_bGuardDeletion) {
           if (difference.operation != DIFF_EQUAL) {
             if (rangeStart < mention.end && rangeEnd > mention.start) {
-              _cachedMentions.removeAt(x);
+              cachedMentions.removeAt(x);
               continue;
             }
           }
