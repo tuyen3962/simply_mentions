@@ -303,11 +303,11 @@ class MentionTextEditingController extends TextEditingController {
 
     _bGuardDeletion = true;
     text = text.replaceRange(
-        mentionStart, mentionEnd, '$startChar${mention.displayName}');
+        mentionStart, mentionEnd, '$startChar${mention.displayName} ');
     _bGuardDeletion = false;
 
     selection = TextSelection.collapsed(
-        offset: mentionVisibleTextEnd, affinity: TextAffinity.upstream);
+        offset: mentionVisibleTextEnd + 1, affinity: TextAffinity.upstream);
 
     _sortMentions();
   }
