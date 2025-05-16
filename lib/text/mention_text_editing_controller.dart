@@ -476,6 +476,9 @@ class MentionTextEditingController extends TextEditingController {
       {required int mentionStartIndex,
       required MentionSyntax syntax,
       int mentionLength = 1}) {
+    if (isMentioning()) {
+      return;
+    }
     _mentionStartingIndex = mentionStartIndex;
     _mentionLength = mentionLength;
     _mentionSyntax = syntax;
