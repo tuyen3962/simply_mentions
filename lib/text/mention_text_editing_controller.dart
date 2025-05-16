@@ -471,4 +471,13 @@ class MentionTextEditingController extends TextEditingController {
       }
     }
   }
+
+  void setMentionStatus(
+      {required int mentionStartIndex,
+      required MentionSyntax syntax,
+      int mentionLength = 1}) {
+    _mentionStartingIndex = mentionStartIndex;
+    _mentionLength = mentionLength;
+    _mentionSyntax = syntax;
+  }
 }
