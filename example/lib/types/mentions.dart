@@ -48,40 +48,38 @@ class DocumentMentionBuilder extends MarkdownMentionBuilder {
 
     final name = documentMentions[mentionIndex].displayName;
 
-    return Builder(
-      builder: (context) {
-        final theme = Theme.of(context);
+    return Builder(builder: (context) {
+      final theme = Theme.of(context);
 
-        return RichText(
-          text: TextSpan(
-            children: [
-              WidgetSpan(
-                baseline: TextBaseline.alphabetic,
-                alignment: PlaceholderAlignment.baseline,
-                child: GestureDetector(
-                  onTap: () {
-                    // Do what you need to do using mentionedId
-                  },
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                    child: RichText(
-                      text: TextSpan(
-                        text: '@$name',
-                        style: TextStyle(
-                          color: theme.colorScheme.onPrimary,
-                        ),
+      return RichText(
+        text: TextSpan(
+          children: [
+            WidgetSpan(
+              baseline: TextBaseline.alphabetic,
+              alignment: PlaceholderAlignment.baseline,
+              child: GestureDetector(
+                onTap: () {
+                  // Do what you need to do using mentionedId
+                },
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: RichText(
+                    text: TextSpan(
+                      text: '@$name',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimary,
                       ),
                     ),
                   ),
                 ),
               ),
-            ],
-          ),
-        );
-      }
-    );
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

@@ -1,8 +1,10 @@
 // ignore_for_file: constant_identifier_names
 import 'dart:async';
+import 'dart:math';
 
 import 'package:diff_match_patch/diff_match_patch.dart';
 import 'package:flutter/material.dart';
+import 'package:simply_mentions/text/extension.dart';
 
 part 'mention_object.dart';
 part 'mention_syntax.dart';
@@ -173,7 +175,7 @@ class MentionTextEditingController extends TextEditingController {
     if (isMentioning()) {
       return text.substring(
         _mentionStartingIndex! + 1,
-        _mentionStartingIndex! + _mentionLength!,
+        min(_mentionStartingIndex! + _mentionLength!, text.length),
       );
     }
 
@@ -264,6 +266,7 @@ class MentionTextEditingController extends TextEditingController {
 
   void _init() {
     addListener(_onTextChanged);
+    // addListener(_onRemoveAndUpdateMentions);
     if (text.isNotEmpty) {
       _onTextChanged();
     }
@@ -281,6 +284,34 @@ class MentionTextEditingController extends TextEditingController {
     controllerToCopyTo?.text = text;
   }
 
+  // void _onRemoveAndUpdateMentions() {
+  //   if (isMentioning()) {
+  //     return;
+  //   }
+  //   final int startWordIndex = this.startWordIndex;
+  //   if (startWordIndex == -1) {
+  //     return;
+  //   }
+
+  //   for (final _TextMention mention in cachedMentions) {
+  //     if (mention.start <= startWordIndex && mention.end >= startWordIndex) {
+  //       return;
+  //     }
+  //   }
+  //   final String textFromStartCursor = text.substring(startWordIndex).trim();
+  //   for (final MentionSyntax syntax in mentionSyntaxes) {
+  //     if (textFromStartCursor.startsWith(syntax.startingCharacter)) {
+  //       final List<String> splitTexts = textFromStartCursor.split(' ');
+  //       setMentionStatus(
+  //           mentionStartIndex: startWordIndex,
+  //           mentionLength:
+  //               splitTexts.isNotEmpty ? splitTexts.first.length + 1 : 1,
+  //           syntax: syntax);
+  //       return;
+  //     }
+  //   }
+  // }
+
   /// Insert a mention in the currently mentioning position
   void insertMention(MentionObject mention) {
     assert(isMentioning());
@@ -296,7 +327,8 @@ class MentionTextEditingController extends TextEditingController {
         syntax: _mentionSyntax!));
 
     final int mentionStart = _mentionStartingIndex!;
-    final int mentionEnd = _mentionStartingIndex! + _mentionLength!;
+    final int mentionEnd =
+        min(_mentionStartingIndex! + _mentionLength!, text.length);
     final String startChar = _mentionSyntax!.startingCharacter;
 
     cancelMentioning();
@@ -310,6 +342,16 @@ class MentionTextEditingController extends TextEditingController {
         offset: mentionVisibleTextEnd + 1, affinity: TextAffinity.upstream);
 
     _sortMentions();
+  }
+
+  void removeMention(_TextMention mention) {
+    // assert(isMentioning());
+
+    final int mentionStart = mention.start;
+    final int mentionEnd = mention.end;
+
+    cachedMentions.removeWhere(
+        (_TextMention e) => e.start == mentionStart && e.end == mentionEnd);
   }
 
   /// Check if we are currently mentioning
@@ -482,5 +524,14 @@ class MentionTextEditingController extends TextEditingController {
     _mentionStartingIndex = mentionStartIndex;
     _mentionLength = mentionLength;
     _mentionSyntax = syntax;
+    _notifySuggestionListeners(
+      MentionSuggestion(
+        syntax: syntax,
+        search: text.substring(
+          _mentionStartingIndex!,
+          min(_mentionStartingIndex! + _mentionLength!, text.length),
+        ),
+      ),
+    );
   }
 }
