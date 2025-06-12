@@ -36,14 +36,14 @@ class MentionTextEditingController extends TextEditingController {
     this.mentionTextStyle,
     this.runTextStyle,
     required this.idToMentionObject,
-    List<_TextMention> initialMentions = const [],
+    List<TextMention> initialMentions = const [],
     super.text,
   }) {
-    _init();
-
     if (initialMentions.isNotEmpty) {
       cachedMentions.addAll(initialMentions);
     }
+
+    _init();
 
     if (onSuggestionChanged != null) {
       addSuggestionListener(onSuggestionChanged);
@@ -75,7 +75,7 @@ class MentionTextEditingController extends TextEditingController {
   final TextStyle? runTextStyle;
 
   final List<SuggestionCallback> _suggestionCallbacks = <SuggestionCallback>[];
-  final List<_TextMention> cachedMentions = <_TextMention>[];
+  final List<TextMention> cachedMentions = <TextMention>[];
   bool _bGuardDeletion = false;
   String _previousText = '';
   int? _mentionStartingIndex;
@@ -137,7 +137,7 @@ class MentionTextEditingController extends TextEditingController {
               indexToInsertMention + insertText.length;
 
           cachedMentions.add(
-            _TextMention(
+            TextMention(
               id: mentionId,
               display: insertText,
               start: indexToInsertMention,
@@ -198,7 +198,7 @@ class MentionTextEditingController extends TextEditingController {
     int lastStartingRunStart = 0;
 
     for (int i = 0; i < cachedMentions.length; ++i) {
-      final _TextMention mention = cachedMentions[i];
+      final TextMention mention = cachedMentions[i];
 
       final int indexToEndRegular = mention.start;
 
@@ -230,7 +230,7 @@ class MentionTextEditingController extends TextEditingController {
     int lastStartingRunStart = 0;
     final List<InlineSpan> inlineSpans = <InlineSpan>[];
 
-    for (final _TextMention mention in cachedMentions) {
+    for (final TextMention mention in cachedMentions) {
       final int indexToEndRegular = mention.start;
 
       if (indexToEndRegular != lastStartingRunStart) {
@@ -298,7 +298,7 @@ class MentionTextEditingController extends TextEditingController {
   //     return;
   //   }
 
-  //   for (final _TextMention mention in cachedMentions) {
+  //   for (final TextMention mention in cachedMentions) {
   //     if (mention.start <= startWordIndex && mention.end >= startWordIndex) {
   //       return;
   //     }
@@ -324,7 +324,7 @@ class MentionTextEditingController extends TextEditingController {
     final int mentionVisibleTextEnd =
         _mentionStartingIndex! + mention.displayName.length + 1;
 
-    cachedMentions.add(_TextMention(
+    cachedMentions.add(TextMention(
         id: mention.id,
         display: mention.displayName,
         start: _mentionStartingIndex!,
@@ -349,14 +349,14 @@ class MentionTextEditingController extends TextEditingController {
     _sortMentions();
   }
 
-  void removeMention(_TextMention mention) {
+  void removeMention(TextMention mention) {
     // assert(isMentioning());
 
     final int mentionStart = mention.start;
     final int mentionEnd = mention.end;
 
     cachedMentions.removeWhere(
-        (_TextMention e) => e.start == mentionStart && e.end == mentionEnd);
+        (TextMention e) => e.start == mentionStart && e.end == mentionEnd);
   }
 
   /// Check if we are currently mentioning
@@ -366,7 +366,7 @@ class MentionTextEditingController extends TextEditingController {
       _mentionSyntax != null;
 
   void _sortMentions() {
-    cachedMentions.sort((_TextMention a, _TextMention b) {
+    cachedMentions.sort((TextMention a, TextMention b) {
       return a.start - b.start;
     });
   }
@@ -478,7 +478,7 @@ class MentionTextEditingController extends TextEditingController {
       }
 
       for (int x = cachedMentions.length - 1; x >= 0; --x) {
-        final _TextMention mention = cachedMentions[x];
+        final TextMention mention = cachedMentions[x];
 
         // Not overlapping but we inserted text in front of mentions so we need to shift them
         if (mention.start >= currentTextIndex &&
