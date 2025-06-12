@@ -36,9 +36,14 @@ class MentionTextEditingController extends TextEditingController {
     this.mentionTextStyle,
     this.runTextStyle,
     required this.idToMentionObject,
+    List<_TextMention> initialMentions = const [],
     super.text,
   }) {
     _init();
+
+    if (initialMentions.isNotEmpty) {
+      cachedMentions.addAll(initialMentions);
+    }
 
     if (onSuggestionChanged != null) {
       addSuggestionListener(onSuggestionChanged);
