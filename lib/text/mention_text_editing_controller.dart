@@ -271,7 +271,6 @@ class MentionTextEditingController extends TextEditingController {
 
   void _init() {
     addListener(_onTextChanged);
-    // addListener(_onRemoveAndUpdateMentions);
     if (text.isNotEmpty) {
       _onTextChanged();
     }
@@ -288,34 +287,6 @@ class MentionTextEditingController extends TextEditingController {
 
     controllerToCopyTo?.text = text;
   }
-
-  // void _onRemoveAndUpdateMentions() {
-  //   if (isMentioning()) {
-  //     return;
-  //   }
-  //   final int startWordIndex = this.startWordIndex;
-  //   if (startWordIndex == -1) {
-  //     return;
-  //   }
-
-  //   for (final TextMention mention in cachedMentions) {
-  //     if (mention.start <= startWordIndex && mention.end >= startWordIndex) {
-  //       return;
-  //     }
-  //   }
-  //   final String textFromStartCursor = text.substring(startWordIndex).trim();
-  //   for (final MentionSyntax syntax in mentionSyntaxes) {
-  //     if (textFromStartCursor.startsWith(syntax.startingCharacter)) {
-  //       final List<String> splitTexts = textFromStartCursor.split(' ');
-  //       setMentionStatus(
-  //           mentionStartIndex: startWordIndex,
-  //           mentionLength:
-  //               splitTexts.isNotEmpty ? splitTexts.first.length + 1 : 1,
-  //           syntax: syntax);
-  //       return;
-  //     }
-  //   }
-  // }
 
   /// Insert a mention in the currently mentioning position
   void insertMention(MentionObject mention) {
@@ -396,26 +367,26 @@ class MentionTextEditingController extends TextEditingController {
       if (difference.operation == DIFF_INSERT) {
         if (isMentioning()) {
           // Spaces are considered breakers for mentioning
-          if (difference.text == ' ') {
-            cancelMentioning();
-          } else {
-            if (currentTextIndex <= _mentionStartingIndex! + _mentionLength! &&
-                currentTextIndex >= _mentionStartingIndex! + _mentionLength!) {
-              _mentionLength = _mentionLength! + difference.text.length;
+          // if (difference.text == ' ') {
+          //   cancelMentioning();
+          // } else {
+          if (currentTextIndex <= _mentionStartingIndex! + _mentionLength! &&
+              currentTextIndex >= _mentionStartingIndex! + _mentionLength!) {
+            _mentionLength = _mentionLength! + difference.text.length;
 
-              _notifySuggestionListeners(
-                MentionSuggestion(
-                  syntax: _mentionSyntax,
-                  search: text.substring(
-                    _mentionStartingIndex!,
-                    _mentionStartingIndex! + _mentionLength!,
-                  ),
+            _notifySuggestionListeners(
+              MentionSuggestion(
+                syntax: _mentionSyntax,
+                search: text.substring(
+                  _mentionStartingIndex!,
+                  _mentionStartingIndex! + _mentionLength!,
                 ),
-              );
-            } else {
-              cancelMentioning();
-            }
+              ),
+            );
+          } else {
+            cancelMentioning();
           }
+          // }
         } else {
           for (int i = 0; i < mentionSyntaxes.length; ++i) {
             final MentionSyntax syntax = mentionSyntaxes[i];
