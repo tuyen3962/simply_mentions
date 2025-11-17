@@ -510,4 +510,9 @@ class MentionTextEditingController extends TextEditingController {
       ),
     );
   }
+
+  void clearAllCacheMentions() {
+    cachedMentions.clear();
+    notifyListeners();
+  }
 }
